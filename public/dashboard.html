@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Registrations - EventConnect</title>
+    <meta name="description" content="View and manage your event registrations.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <i class="fas fa-calendar-check"></i>
+                <div>
+                    <span>EventConnect</span>
+                </div>
+            </a>
+            
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#events" class="nav-link">Events</a>
+                <a href="dashboard.html" class="nav-link active">My Registrations</a>
+                <a href="#" class="nav-link">About</a>
+            </div>
+
+            <div class="nav-auth">
+                <span id="userDisplay" class="user-greeting"></span>
+                <button id="logoutBtn" class="btn btn-outline-white">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-bg">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="registrations-header">
+                <h1>My Registrations</h1>
+                <p>View and manage your event registrations.</p>
+            </div>
+
+            <!-- Registrations List -->
+            <div id="registrations" class="registrations-list">
+                <div class="loading-message">Loading your registrations...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-calendar-check"></i>
+                EventConnect
+            </div>
+            <div class="footer-text">
+                &copy; 2026 EventConnect. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        // Authorization check
+        if (!token || !user) {
+            window.location.href = "login.html";
+        }
+
+        // Category helpers
+        function getCategoryBadgeClass(category) {
+            const map = {
+                'Music': 'badge-music', 'Technology': 'badge-technology',
+                'Business': 'badge-business', 'Sports': 'badge-sports',
+                'Workshop': 'badge-workshop'
+            };
+            return map[category] || 'badge-default';
+        }
+
+        function getCategoryIcon(category) {
+            const map = {
+                'Music': 'fa-music', 'Technology': 'fa-laptop-code',
+                'Business': 'fa-briefcase', 'Sports': 'fa-futbol',
+                'Workshop': 'fa-tools'
+            };
+            return map[category] || 'fa-calendar-alt';
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
+        if (user) {
+            document.getElementById("userDisplay").innerHTML = `
+                <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+                <span>${user.name}</span>
+            `;
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            localStorage.removeItem("rememberEmail");
+            window.location.href = "index.html";
+        });
+
+        // ============================================
+        // REGISTRATION CARD
+        // ============================================
+
+        function createRegistrationCard(registration) {
+            const event = registration.eventId;
+            if (!event) return '';
+            
+            const eventDate = new Date(event.date);
+            const formattedDate = eventDate.toLocaleDateString('en-US', {
+                day: 'numeric', month: 'short', year: 'numeric'
+            });
+            const category = event.category || 'Event';
+            const icon = getCategoryIcon(category);
+            const location = event.location || 'Location TBA';
+
+            const imageHtml = event.image
+                ? `<img src="${event.image}" alt="${event.title}">`
+                : `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;font-size:2rem;"><i class="fas ${icon}"></i></div>`;
+
+            return `
+                <div class="registration-card" id="reg-card-${registration._id}">
+                    <div class="registration-thumbnail">
+                        ${imageHtml}
+                    </div>
+                    
+                    <div class="registration-info">
+                        <h3>${event.title}</h3>
+                        <div class="registration-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${location}</span>
+                        </div>
+                    </div>
+
+                    <div class="registration-actions">
+                        <span class="status-badge status-registered">
+                            <i class="fas fa-check-circle"></i> Registered
+                        </span>
+                        <button onclick="cancelRegistration('${registration._id}')" class="btn btn-danger-outline" id="cancel-${registration._id}">
+                            Cancel Registration
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // LOAD REGISTRATIONS
+        // ============================================
+
+        async function loadUserRegistrations() {
+            try {
+                const response = await fetch(
+                    `http://localhost:5000/registrations/user/${user.email}`
+                );
+                
+                if (!response.ok) {
+                    throw new Error("Failed to fetch registrations");
+                }
+                
+                const registrations = await response.json();
+                const regDiv = document.getElementById("registrations");
+
+                if (registrations.length === 0) {
+                    regDiv.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>You haven't registered for any events yet.</p>
+                            <a href="index.html" class="btn btn-primary" style="margin-top: 1rem;">
+                                <i class="fas fa-arrow-right"></i> Browse Events
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    regDiv.innerHTML = registrations
+                        .map(reg => createRegistrationCard(reg))
+                        .join("");
+                }
+            } catch (err) {
+                document.getElementById("registrations").innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Error loading registrations: ${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================
+        // CANCEL REGISTRATION
+        // ============================================
+
+        async function cancelRegistration(regId) {
+            if (!confirm("Are you sure you want to cancel this registration?")) return;
+
+            try {
+                const response = await fetch(`http://localhost:5000/registrations/${regId}`, {
+                    method: "DELETE"
+                });
+                
+                if (response.ok) {
+                    // Smooth remove animation
+                    const card = document.getElementById(`reg-card-${regId}`);
+                    if (card) {
+                        card.style.transition = 'all 0.3s ease';
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateX(20px)';
+                        setTimeout(() => {
+                            loadUserRegistrations();
+                        }, 300);
+                    } else {
+                        loadUserRegistrations();
+                    }
+                } else {
+                    alert("Failed to cancel registration.");
+                }
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
+        }
+
+        // ============================================
+        // LOAD ON PAGE LOAD
+        // ============================================
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadUserRegistrations();
+        });
+    </script>
+</body>
+</html>

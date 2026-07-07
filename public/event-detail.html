@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - Event Registration System</title>
+    <meta name="description" content="View event details and register for this event.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <i class="fas fa-calendar-check"></i>
+                <div>
+                    <span>Event Registration</span>
+                    <small>System</small>
+                </div>
+            </a>
+            
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html#events" class="nav-link">Events</a>
+                <a href="dashboard.html" class="nav-link" id="myRegLink">My Registrations</a>
+                <a href="#" class="nav-link">About</a>
+            </div>
+
+            <div class="nav-auth">
+                <span id="userDisplay" class="user-greeting" style="display: none;"></span>
+                <div id="authLinks" class="auth-links">
+                    <a href="login.html" class="btn btn-nav">Login / Register</a>
+                </div>
+                <button id="logoutBtn" class="btn btn-outline-white" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-bg">
+        <div class="container">
+            <!-- Back Link -->
+            <a href="index.html" class="detail-back" id="back-to-events">
+                <i class="fas fa-arrow-left"></i>
+                Back to Events
+            </a>
+
+            <!-- Event Detail -->
+            <div class="detail-layout" id="eventDetail">
+                <div class="loading-message" style="grid-column: 1 / -1; padding: 4rem;">
+                    Loading event details...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user"));
+        const params = new URLSearchParams(window.location.search);
+        const eventId = params.get("id");
+
+        // Category helpers
+        function getCategoryBadgeClass(category) {
+            const map = {
+                'Music': 'badge-music', 'Technology': 'badge-technology',
+                'Business': 'badge-business', 'Sports': 'badge-sports',
+                'Workshop': 'badge-workshop'
+            };
+            return map[category] || 'badge-default';
+        }
+
+        function getCategoryIcon(category) {
+            const map = {
+                'Music': 'fa-music', 'Technology': 'fa-laptop-code',
+                'Business': 'fa-briefcase', 'Sports': 'fa-futbol',
+                'Workshop': 'fa-tools'
+            };
+            return map[category] || 'fa-calendar-alt';
+        }
+
+        // Init nav
+        function initNav() {
+            const userDisplay = document.getElementById("userDisplay");
+            const authLinks = document.getElementById("authLinks");
+            const logoutBtn = document.getElementById("logoutBtn");
+
+            if (token && user) {
+                if (userDisplay) {
+                    userDisplay.style.display = "flex";
+                    userDisplay.innerHTML = `
+                        <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+                        <span>${user.name}</span>
+                    `;
+                }
+                if (authLinks) authLinks.style.display = "none";
+                if (logoutBtn) {
+                    logoutBtn.style.display = "inline-flex";
+                    logoutBtn.addEventListener("click", () => {
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("user");
+                        localStorage.removeItem("rememberEmail");
+                        window.location.href = "index.html";
+                    });
+                }
+            }
+        }
+
+        // Load event
+        async function loadEvent() {
+            if (!eventId) {
+                document.getElementById("eventDetail").innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1; padding: 4rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>No event selected. Please go back and choose an event.</p>
+                        <a href="index.html" class="btn btn-primary" style="margin-top: 1rem;">Browse Events</a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/events/${eventId}`);
+                if (!response.ok) throw new Error("Event not found");
+                const event = await response.json();
+                
+                document.title = `${event.title} - Event Registration System`;
+                renderEventDetail(event);
+            } catch (err) {
+                document.getElementById("eventDetail").innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1; padding: 4rem;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Error loading event: ${err.message}</p>
+                        <a href="index.html" class="btn btn-primary" style="margin-top: 1rem;">Browse Events</a>
+                    </div>
+                `;
+            }
+        }
+
+        function renderEventDetail(event) {
+            const eventDate = new Date(event.date);
+            const formattedDate = eventDate.toLocaleDateString('en-US', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+            const formattedTime = eventDate.toLocaleTimeString('en-US', {
+                hour: '2-digit', minute: '2-digit'
+            });
+
+            const category = event.category || 'Event';
+            const badgeClass = getCategoryBadgeClass(category);
+            const icon = getCategoryIcon(category);
+
+            const imageHtml = event.image
+                ? `<img src="${event.image}" alt="${event.title}">`
+                : `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;font-size:5rem;"><i class="fas ${icon}"></i></div>`;
+
+            // Speakers section
+            let speakersHtml = '';
+            if (event.speakers && event.speakers.length > 0) {
+                speakersHtml = `
+                    <div class="detail-speakers">
+                        <h4 class="detail-section-title">Speakers:</h4>
+                        <ul>
+                            ${event.speakers.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Price
+            const priceHtml = event.price 
+                ? `<div class="detail-price">Price: <span>₹${event.price}</span></div>`
+                : `<div class="detail-price">Price: <span>Free</span></div>`;
+
+            // Time range
+            const timeRange = event.endTime 
+                ? `${formattedTime} – ${event.endTime}`
+                : formattedTime;
+
+            // Register button
+            const registerBtn = token
+                ? `<a href="register.html?id=${event._id}" class="btn btn-primary btn-lg btn-full detail-register-btn" id="register-btn">
+                        <i class="fas fa-check-circle"></i> Register for this Event
+                   </a>`
+                : `<a href="login.html" class="btn btn-primary btn-lg btn-full detail-register-btn" id="register-btn">
+                        <i class="fas fa-sign-in-alt"></i> Login to Register
+                   </a>`;
+
+            document.getElementById("eventDetail").innerHTML = `
+                <div class="detail-image">
+                    ${imageHtml}
+                </div>
+                <div class="detail-info">
+                    <span class="detail-category event-category-badge ${badgeClass}">${category}</span>
+                    <h1 class="detail-title">${event.title}</h1>
+                    
+                    <div class="detail-meta">
+                        <div class="detail-meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${formattedDate}</span>
+                        </div>
+                        <div class="detail-meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>${timeRange}</span>
+                        </div>
+                        <div class="detail-meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${event.location || 'Location TBA'}</span>
+                        </div>
+                    </div>
+
+                    ${event.organizer ? `<p class="detail-organizer">Organized by <strong>${event.organizer}</strong></p>` : ''}
+
+                    ${speakersHtml}
+
+                    <div class="detail-description">
+                        <h4 class="detail-section-title">About This Event</h4>
+                        <p>${event.description || 'No description available.'}</p>
+                    </div>
+
+                    ${priceHtml}
+
+                    ${registerBtn}
+                </div>
+            `;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initNav();
+            loadEvent();
+        });
+    </script>
+</body>
+</html>

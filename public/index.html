@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventConnect - Discover Amazing Events</title>
+    <meta name="description" content="Find and register for amazing events. Browse music festivals, tech conferences, business workshops and more.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <i class="fas fa-calendar-check"></i>
+                <div>
+                    <span>EventConnect</span>
+                </div>
+            </a>
+            
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="#events" class="nav-link">Events</a>
+                <a href="dashboard.html" class="nav-link" id="myRegLink">My Registrations</a>
+                <a href="#about" class="nav-link">About</a>
+                <a id="adminLink" href="admin.html" class="nav-link" style="display: none;">Admin</a>
+            </div>
+
+            <div class="nav-auth">
+                <span id="userDisplay" class="user-greeting" style="display: none;"></span>
+                <div id="authLinks" class="auth-links">
+                    <a href="login.html" class="btn btn-nav">Login / Register</a>
+                </div>
+                <button id="logoutBtn" class="btn btn-outline-white" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-bg-white">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Discover Amazing Events</h1>
+                <p>Find and register for events that interest you.</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" class="search-box" placeholder="Search events by title, description..." />
+                </div>
+                <select id="categoryFilter" class="category-filter">
+                    <option value="">All Categories</option>
+                    <option value="Music">Music</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Business">Business</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Workshop">Workshop</option>
+                </select>
+                <div class="filter-actions" id="filterActions" style="display: none;">
+                    <a href="dashboard.html" class="btn btn-primary" id="viewMyRegBtn">
+                        <i class="fas fa-ticket-alt"></i> View My Registrations
+                    </a>
+                </div>
+            </div>
+
+            <!-- Events Grid -->
+            <div class="events-grid" id="events">
+                <div class="loading-message">Loading events...</div>
+            </div>
+
+            <!-- View All Button -->
+            <div class="view-all-container">
+                <button id="viewAllBtn" class="btn btn-outline" style="display: none;">
+                    View All Events
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fas fa-calendar-check"></i>
+                EventConnect
+            </div>
+            <div class="footer-text">
+                &copy; 2026 EventConnect. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

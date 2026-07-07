@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register for Event - Event Registration System</title>
+    <meta name="description" content="Register for an event on Event Registration System.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .register-container {
+            max-width: 560px;
+            margin: 3rem auto;
+            background: var(--bg-white);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+        }
+        .register-container h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+        .event-info-bar {
+            background: var(--bg-light);
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .event-info-bar .event-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        .event-info-bar .event-date {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-brand">
+                <i class="fas fa-calendar-check"></i>
+                <div>
+                    <span>Event Registration</span>
+                    <small>System</small>
+                </div>
+            </a>
+            
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-arrow-left"></i> Back to Events
+                </a>
+            </div>
+
+            <div class="nav-auth">
+                <span id="userDisplay" class="user-greeting" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-bg">
+        <!-- Registration Form -->
+        <div class="register-container">
+            <h1><i class="fas fa-ticket-alt" style="color: var(--primary); margin-right: 0.5rem;"></i>Register for Event</h1>
+            <p id="eventInfo" style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">Loading event information...</p>
+
+            <div id="message" class="message"></div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="userName">Full Name</label>
+                    <input
+                        type="text"
+                        id="userName"
+                        class="form-input"
+                        placeholder="Enter your full name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-input"
+                        placeholder="Enter your email address"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number (Optional)</label>
+                    <input
+                        type="tel"
+                        id="phone"
+                        class="form-input"
+                        placeholder="Enter your phone number"
+                    >
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-primary btn-full btn-lg" style="margin-top: 0.5rem;">
+                    <i class="fas fa-check-circle"></i> Complete Registration
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Need help? <a href="#">Contact us</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user"));
+        const params = new URLSearchParams(window.location.search);
+        const eventId = params.get("id");
+
+        // Update user display
+        if (user) {
+            const userDisplay = document.getElementById("userDisplay");
+            userDisplay.style.display = "flex";
+            userDisplay.innerHTML = `
+                <div class="user-avatar">${user.name.charAt(0).toUpperCase()}</div>
+                <span>${user.name}</span>
+            `;
+            document.getElementById("email").value = user.email;
+            document.getElementById("userName").value = user.name;
+        }
+
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById("message");
+            msgDiv.textContent = text;
+            msgDiv.className = `message ${type}`;
+        }
+
+        // Load event info
+        async function loadEventInfo() {
+            if (!eventId) {
+                showMessage("Error: No event selected. Please go back and select an event.", "error");
+                document.getElementById("submitBtn").disabled = true;
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/events/${eventId}`);
+                if (response.ok) {
+                    const event = await response.json();
+                    const eventDate = new Date(event.date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    document.getElementById("eventInfo").innerHTML = `
+                        <div class="event-info-bar">
+                            <div>
+                                <div class="event-name">${event.title}</div>
+                                <div class="event-date">
+                                    <i class="fas fa-calendar-alt"></i> ${eventDate}
+                                    <span style="margin-left: 0.5rem;"><i class="fas fa-map-marker-alt"></i> ${event.location || 'TBA'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error("Failed to load event info:", err);
+            }
+        }
+
+        // Handle form submission
+        document.getElementById("registerForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const userName = document.getElementById("userName").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const submitBtn = document.getElementById("submitBtn");
+
+            if (!userName || !email) {
+                showMessage("Please fill in all required fields.", "error");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Registering...";
+
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/registrations",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            userName,
+                            email,
+                            eventId
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    showMessage("Error: " + (data.error || "Registration failed"), "error");
+                } else {
+                    showMessage("Registration successful! Redirecting to your registrations...", "success");
+                    document.getElementById("registerForm").reset();
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 1500);
+                }
+            } catch (err) {
+                showMessage("Error: " + err.message, "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Complete Registration';
+            }
+        });
+
+        // Load event info on page load
+        document.addEventListener("DOMContentLoaded", loadEventInfo);
+    </script>
+</body>
+</html>

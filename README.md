@@ -203,18 +203,19 @@ http://localhost:5000
 Add screenshots of:
 
 - Home Page
-- 
+  
   <img width="1908" height="918" alt="image" src="https://github.com/user-attachments/assets/39355c45-08fa-4faf-aea3-99ee8cee59f7" />
 
 
 - Login Page
-- 
-  <img width="1917" height="908" alt="image" src="https://github.com/user-attachments/assets/bb05aece-7226-48d3-bd5e-72e496c3dc57" />
+
+  <img width="1903" height="905" alt="image" src="https://github.com/user-attachments/assets/cb55249e-2465-4008-a0be-723fae6b3117" />
 
 
 - Register Page
   
-  <img width="1908" height="900" alt="image" src="https://github.com/user-attachments/assets/28c18693-f89a-4448-8aa1-932bb7315a4e" />
+<img width="1902" height="904" alt="image" src="https://github.com/user-attachments/assets/7bf18ebd-4acc-4c89-b015-92042f3ecc4e" />
+
 
 - User Dashboard
   
@@ -223,7 +224,7 @@ Add screenshots of:
 
 - Event Details
 
-  <img width="1904" height="912" alt="image" src="https://github.com/user-attachments/assets/a853f000-e147-497f-ab2c-8deff65f6a78" />
+<img width="1902" height="908" alt="image" src="https://github.com/user-attachments/assets/302fa5d3-c319-426f-94bd-49781343ba06" />
 
 
 - Admin Dashboard

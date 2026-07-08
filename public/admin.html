@@ -36,7 +36,7 @@
         </div>
     </nav>
 
-    <div class="page-bg" style="flex: 1;">
+    <div class="page-bg">
         <div class="container admin-container">
             <div class="admin-header-main">
                 <h1 id="adminGreeting">Welcome back, Admin! 👋</h1>
@@ -85,7 +85,7 @@
                 </div>
 
                 <!-- Top Events List -->
-                <div class="register-container" style="max-width: 100%; margin: 0; box-shadow: none; padding: 1.5rem;">
+                <div class="register-container admin-panel-card">
                     <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">Top Events by Registrations</h2>
                     <div id="topEventsList">
                         <p style="color: var(--text-secondary); font-size: 0.9rem;">Loading top events...</p>
@@ -108,12 +108,12 @@
                             <label for="image">Event Image</label>
                             <input type="file" id="image" class="form-input" accept="image/*" />
                         </div>
-                        <div class="form-group" style="display: flex; gap: 1rem;">
-                            <div style="flex: 1;">
+                        <div class="form-group form-row">
+                            <div class="form-half">
                                 <label for="date">Date & Time</label>
                                 <input id="date" type="datetime-local" class="form-input" required />
                             </div>
-                            <div style="flex: 1;">
+                            <div class="form-half">
                                 <label for="category">Category</label>
                                 <select id="category" class="form-input">
                                     <option value="Technology">Technology</option>
@@ -141,7 +141,7 @@
 
             <!-- TAB 3: MANAGE EVENTS & REGISTRATIONS -->
             <div id="tab-manageEvents" class="tab-content">
-                <div class="register-container" style="max-width: 100%; margin: 0; box-shadow: none; padding: 1.5rem;">
+                <div class="register-container admin-panel-card">
                     <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">Manage Events</h2>
                     <div style="overflow-x: auto;">
                         <table class="admin-table">
@@ -173,6 +173,14 @@
             <div class="footer-brand">
                 <i class="fas fa-calendar-check"></i>
                 EventConnect
+            </div>
+            <div class="footer-text">
+                <a href="https://www.linkedin.com/in/sayali-mangale-s1593/" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
+                <a href="https://github.com/sayaliTechX" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
             </div>
             <div class="footer-text">
                 &copy; 2026 EventConnect. All rights reserved.

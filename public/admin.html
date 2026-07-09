@@ -24,6 +24,9 @@
                     <small>Admin Panel</small>
                 </div>
             </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation" aria-expanded="false">
+                <i class="fas fa-bars"></i>
+            </button>
             <div class="nav-menu">
                 <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Events</a>
             </div>
@@ -188,6 +191,7 @@
         </div>
     </footer>
 
+    <script src="script.js"></script>
     <script>
         const API_URL = "https://event-registration-api-ogpe.onrender.com";
         const token = localStorage.getItem("token");

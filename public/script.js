@@ -38,6 +38,50 @@ function initializeNavigation() {
     const logoutBtn = document.getElementById("logoutBtn");
     const filterActions = document.getElementById("filterActions");
     const adminLink = document.getElementById("adminLink");
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const navbarContainer = document.querySelector(".navbar-container");
+
+    if (mobileMenuBtn && navbarContainer) {
+        const navMenu = navbarContainer.querySelector(".nav-menu");
+        const navAuth = navbarContainer.querySelector(".nav-auth");
+
+        if (navMenu && navAuth) {
+            const closeMobileMenu = () => {
+                if (window.innerWidth <= 768) {
+                    navbarContainer.classList.remove("menu-open");
+                    mobileMenuBtn.setAttribute("aria-expanded", "false");
+                    const icon = mobileMenuBtn.querySelector("i");
+                    if (icon) icon.className = "fas fa-bars";
+                }
+            };
+
+            mobileMenuBtn.addEventListener("click", () => {
+                const isOpen = navbarContainer.classList.toggle("menu-open");
+                mobileMenuBtn.setAttribute("aria-expanded", String(isOpen));
+                const icon = mobileMenuBtn.querySelector("i");
+                if (icon) {
+                    icon.className = isOpen ? "fas fa-times" : "fas fa-bars";
+                }
+            });
+
+            navMenu.querySelectorAll(".nav-link").forEach((link) => {
+                link.addEventListener("click", closeMobileMenu);
+            });
+
+            navAuth.querySelectorAll("a, button").forEach((element) => {
+                element.addEventListener("click", closeMobileMenu);
+            });
+
+            window.addEventListener("resize", () => {
+                if (window.innerWidth > 768) {
+                    navbarContainer.classList.remove("menu-open");
+                    mobileMenuBtn.setAttribute("aria-expanded", "false");
+                    const icon = mobileMenuBtn.querySelector("i");
+                    if (icon) icon.className = "fas fa-bars";
+                }
+            });
+        }
+    }
 
     if (token && user) {
         if (userDisplay) {
@@ -197,7 +241,13 @@ function showErrorMessage(message) {
 // ============================================
 document.addEventListener("DOMContentLoaded", () => {
     initializeNavigation();
-    loadEvents();
+
+    const hasEventsSection = document.getElementById("events");
+    const hasFilters = document.getElementById("searchInput") || document.getElementById("categoryFilter");
+
+    if (hasEventsSection || hasFilters) {
+        loadEvents();
+    }
 
     // Setup search and filter listeners
     const searchInput = document.getElementById("searchInput");

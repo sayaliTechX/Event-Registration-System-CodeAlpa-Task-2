@@ -99,9 +99,7 @@
             return map[category] || 'fa-calendar-alt';
         }
 
-        // ============================================
         // INITIALIZATION
-        // ============================================
 
         if (user) {
             document.getElementById("userDisplay").innerHTML = `
@@ -117,9 +115,7 @@
             window.location.href = "index.html";
         });
 
-        // ============================================
         // REGISTRATION CARD
-        // ============================================
 
         function createRegistrationCard(registration) {
             const event = registration.eventId;
@@ -163,9 +159,7 @@
             `;
         }
 
-        // ============================================
         // LOAD REGISTRATIONS
-        // ============================================
 
         async function loadUserRegistrations() {
             try {
@@ -205,9 +199,7 @@
             }
         }
 
-        // ============================================
         // CANCEL REGISTRATION
-        // ============================================
 
         async function cancelRegistration(regId) {
             if (!confirm("Are you sure you want to cancel this registration?")) return;
@@ -238,9 +230,7 @@
             }
         }
 
-        // ============================================
         // LOAD ON PAGE LOAD
-        // ============================================
 
         document.addEventListener("DOMContentLoaded", () => {
             loadUserRegistrations();

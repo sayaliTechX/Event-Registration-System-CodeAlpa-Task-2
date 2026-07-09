@@ -1,9 +1,9 @@
+const API_URL = "https://event-registration-api-ogpe.onrender.com";
 const token = localStorage.getItem("token");
 const user = JSON.parse(localStorage.getItem("user"));
 
-// ============================================
 // UTILITY: Get category badge class
-// ============================================
+
 function getCategoryBadgeClass(category) {
     const map = {
         'Music': 'badge-music',
@@ -15,9 +15,9 @@ function getCategoryBadgeClass(category) {
     return map[category] || 'badge-default';
 }
 
-// ============================================
+
 // UTILITY: Get category image fallback
-// ============================================
+
 function getCategoryIcon(category) {
     const map = {
         'Music': 'fa-music',
@@ -127,8 +127,8 @@ let allEvents = [];
 
 async function loadEvents() {
     try {
-        const response = await fetch("http://localhost:5000/events");
-        
+        const response = await fetch(`${API_URL}/events`);
+
         if (!response.ok) {
             throw new Error("Failed to fetch events");
         }

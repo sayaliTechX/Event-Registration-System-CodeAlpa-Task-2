@@ -110,11 +110,7 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 34a9734 (Update frontend to use deployed backend API)
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-brand">
@@ -134,12 +130,9 @@
             </div>
         </div>
     </footer>
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 34a9734 (Update frontend to use deployed backend API)
     <script>
+        const API_URL = "https://event-registration-api-ogpe.onrender.com";
         // Password toggles
         function setupToggle(toggleId, inputId) {
             document.getElementById(toggleId).addEventListener("click", () => {
@@ -193,7 +186,7 @@
 
             try {
                 const response = await fetch(
-                    "http://localhost:5000/auth/signup",
+                    "${API_URL}/auth/signup",
                     {
                         method: "POST",
                         headers: {

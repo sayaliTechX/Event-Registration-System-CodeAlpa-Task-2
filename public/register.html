@@ -125,11 +125,7 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 34a9734 (Update frontend to use deployed backend API)
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-brand">
@@ -149,12 +145,9 @@
             </div>
         </div>
     </footer>
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 34a9734 (Update frontend to use deployed backend API)
     <script>
+        const API_URL = "https://event-registration-api-ogpe.onrender.com";
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
         const params = new URLSearchParams(window.location.search);
@@ -187,7 +180,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:5000/events/${eventId}`);
+                const response = await fetch(`${API_URL}/events/${eventId}`);
                 if (response.ok) {
                     const event = await response.json();
                     const eventDate = new Date(event.date).toLocaleDateString('en-US', {
@@ -230,7 +223,7 @@
 
             try {
                 const response = await fetch(
-                    "http://localhost:5000/registrations",
+                    `${API_URL}/registrations`,
                     {
                         method: "POST",
                         headers: {
